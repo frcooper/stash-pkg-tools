@@ -1,10 +1,10 @@
 # stash-pkg-tools
 
-Build tooling for repos that publish Stash plugins or scrapers as a package source: it validates each package, builds the `index.yml` and zips Stash installs from, enforces version bumps, and tags releases.
+Build tooling for repos that publish Stash plugins, themes or scrapers as a package source: it validates each package, builds the `index.yml` and zips Stash installs from, enforces version bumps, and tags releases.
 
 ## Use in a package repo
 
-The repo keeps one directory per package under `plugins/` or `scrapers/`, each with `<Id>.yml` and a `CHANGELOG.md`.
+The repo keeps one directory per package under `plugins/`, `themes/` or `scrapers/`, each with `<Id>.yml` and a `CHANGELOG.md`.
 
 `package.json`:
 
@@ -24,7 +24,7 @@ The repo keeps one directory per package under `plugins/` or `scrapers/`, each w
 }
 ```
 
-Set `stashPackages` to `"plugin"` or `"scraper"`.
+Set `stashPackages` to `"plugin"`, `"theme"` or `"scraper"`.
 
 `.github/workflows/deploy.yml`:
 
@@ -55,14 +55,17 @@ Keep the CI workflow in the package repo itself: its job name is the required st
 | `stash-pkg check-versions <base>` | Fails if a package changed since `<base>` without its version going up. |
 | `stash-pkg tag-releases` | Tags HEAD as `<Id>/v<version>` for each version without a tag. |
 
-## Plugins and scrapers
+## Plugins, themes and scrapers
 
-| | Plugin | Scraper |
-|---|---|---|
-| Folder | `plugins/` | `scrapers/` |
-| Version | `version:` in the yml, with a matching `## x.y.z` in CHANGELOG.md | first `## x.y.z` in CHANGELOG.md, because Stash rejects unknown scraper yml keys |
-| Extra checks | `name`, `description`, `version` required; `ui` files exist; `.js` files pass `node --check` | `name` required; only keys Stash accepts |
-| Index metadata | `description`, `url`, `commit` | `commit` |
+Stash has no theme package type: a theme is a plugin that ships CSS, installed from a plugin source. The `theme` kind applies the plugin rules to a `themes/` folder and also requires a stylesheet.
+
+| | Plugin | Theme | Scraper |
+|---|---|---|---|
+| Folder | `plugins/` | `themes/` | `scrapers/` |
+| Stash source type | plugin | plugin | scraper |
+| Version | `version:` in the yml, with a matching `## x.y.z` in CHANGELOG.md | as plugin | first `## x.y.z` in CHANGELOG.md, because Stash rejects unknown scraper yml keys |
+| Extra checks | `name`, `description`, `version` required; `ui` files exist; `.js` files pass `node --check` | as plugin, plus `ui.css` lists at least one file | `name` required; only keys Stash accepts |
+| Index metadata | `description`, `url`, `commit` | as plugin | `commit` |
 
 Shared behaviour lives in `lib/commands.mjs`; per-kind differences are in `lib/kinds.mjs`.
 

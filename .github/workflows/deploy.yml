@@ -1,6 +1,6 @@
 name: Deploy
 
-# Reusable workflow: builds a Stash package source (plugins or scrapers) and
+# Reusable workflow: builds a Stash package source (plugins, themes or scrapers) and
 # pushes it to the caller's dist branch, then tags new package versions.
 # Private repos can't serve GitHub Pages to Stash, so Stash reads the dist
 # branch through raw.githubusercontent.com with an access token instead.

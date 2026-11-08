@@ -6,7 +6,7 @@
 //   tag-releases             tag HEAD as <id>/v<version> for untagged versions
 //
 // Run from the root of a repo whose package.json sets
-// "stashPackages": "plugin" or "scraper".
+// "stashPackages": "plugin", "theme" or "scraper".
 import { openRepo } from "../lib/core.mjs";
 import {
   runBuild,
