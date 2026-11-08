@@ -1,0 +1,25 @@
+{
+  "name": "stash-pkg-tools",
+  "version": "1.0.0",
+  "description": "Validate, build, version-check and tag Stash plugin and scraper sources",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.2"
+  },
+  "bin": {
+    "stash-pkg": "bin/stash-pkg.mjs"
+  },
+  "exports": {
+    ".": "./lib/core.mjs"
+  },
+  "files": [
+    "bin",
+    "lib"
+  ],
+  "dependencies": {
+    "fflate": "0.8.3",
+    "semver": "7.8.5",
+    "yaml": "2.9.1"
+  }
+}

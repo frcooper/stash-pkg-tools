@@ -1,0 +1,62 @@
+name: Deploy
+
+# Reusable workflow: builds a Stash package source (plugins or scrapers) and
+# pushes it to the caller's dist branch, then tags new package versions.
+# Private repos can't serve GitHub Pages to Stash, so Stash reads the dist
+# branch through raw.githubusercontent.com with an access token instead.
+#
+# Caller:
+#   jobs:
+#     deploy:
+#       uses: frcooper/stash-pkg-tools/.github/workflows/deploy.yml@v1.0.0
+#       permissions:
+#         contents: write
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # full history: each package's index date comes from its last commit
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Check versions were bumped
+        if: github.event_name == 'push'
+        run: npx stash-pkg check-versions ${{ github.event.before }}
+      - run: npx stash-pkg build _site
+      - name: Push to dist
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin dist >/dev/null; then
+            git worktree add _dist origin/dist
+            git -C _dist checkout -B dist
+          else
+            git worktree add --detach _dist
+            git -C _dist checkout --orphan dist
+          fi
+          git -C _dist rm -rqf --ignore-unmatch .
+          cp -r _site/. _dist/
+          git -C _dist add -A
+          if git -C _dist diff --cached --quiet; then
+            echo "dist is unchanged"
+          else
+            git -C _dist commit -qm "build: ${GITHUB_SHA::7}"
+            git -C _dist push origin dist
+          fi
+      - name: Tag releases
+        run: |
+          npx stash-pkg tag-releases
+          git push origin --tags
