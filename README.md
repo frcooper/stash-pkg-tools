@@ -51,7 +51,7 @@ Keep the CI workflow in the package repo itself: its job name is the required st
 | Command | What it does |
 |---|---|
 | `stash-pkg validate` | Checks every package is well-formed. |
-| `stash-pkg build [outdir]` | Validates, then writes `index.yml` and one zip per package (default `_site`). |
+| `stash-pkg build [outdir]` | Validates, then writes `index.yml` and one zip per package (default `_site`). With no packages yet, the index is an empty list. |
 | `stash-pkg check-versions <base>` | Fails if a package changed since `<base>` without its version going up. |
 | `stash-pkg tag-releases` | Tags HEAD as `<Id>/v<version>` for each version without a tag. |
 
