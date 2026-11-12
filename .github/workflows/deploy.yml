@@ -1,14 +1,14 @@
 name: Deploy
 
 # Reusable workflow: builds a Stash package source (plugins, themes or scrapers) and
-# pushes it to the caller's dist branch, then tags new package versions.
+# pushes it to the caller's dist branch, then tags the package versions it released.
 # Private repos can't serve GitHub Pages to Stash, so Stash reads the dist
 # branch through raw.githubusercontent.com with an access token instead.
 #
 # Caller:
 #   jobs:
 #     deploy:
-#       uses: frcooper/stash-pkg-tools/.github/workflows/deploy.yml@v1.0.0
+#       uses: frcooper/stash-pkg-tools/.github/workflows/deploy.yml@v2.0.0
 #       permissions:
 #         contents: write
 
@@ -32,9 +32,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Check versions were bumped
-        if: github.event_name == 'push'
-        run: npx stash-pkg check-versions ${{ github.event.before }}
+      # versions come from each package's <id>/v* tags and the merged PR titles
+      - run: npx stash-pkg plan
       - run: npx stash-pkg build _site
       - name: Push to dist
         run: |
@@ -56,7 +55,7 @@ jobs:
             git -C _dist commit -qm "build: ${GITHUB_SHA::7}"
             git -C _dist push origin dist
           fi
-      - name: Tag releases
+      - name: Tag the packages released by this build
         run: |
           npx stash-pkg tag-releases
           git push origin --tags
