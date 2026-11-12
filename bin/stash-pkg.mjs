@@ -2,15 +2,20 @@
 // usage: stash-pkg <command> [args]
 //   validate                 check every package is well-formed
 //   build [outdir]           validate, then write index.yml and zips (default _site)
-//   check-versions <base>    fail if a changed package's version did not go up
-//   tag-releases             tag HEAD as <id>/v<version> for untagged versions
+//   plan [base] [title]      print the version each changed package releases as
+//   check-title <title>      fail unless the PR title is a Conventional Commit
+//   tag-releases             tag HEAD as <id>/v<version> for each new release
+//
+// Versions are worked out from git: each package's last <id>/v* tag, bumped by
+// the merged PRs (squash commits titled with the PR title) that touched it.
 //
 // Run from the root of a repo whose package.json sets
 // "stashPackages": "plugin", "theme" or "scraper".
 import { openRepo } from "../lib/core.mjs";
 import {
   runBuild,
-  runCheckVersions,
+  runCheckTitle,
+  runPlan,
   runTagReleases,
   runValidate,
 } from "../lib/commands.mjs";
@@ -18,7 +23,10 @@ import {
 const COMMANDS = {
   validate: (repo) => runValidate(repo),
   build: (repo, args) => runBuild(repo, args[0]),
-  "check-versions": (repo, args) => runCheckVersions(repo, args[0]),
+  plan: (repo, args) => runPlan(repo, args[0], args[1]),
+  // kept for callers not yet moved to plan; versions are never checked any more
+  "check-versions": (repo, args) => runPlan(repo, args[0]),
+  "check-title": (repo, args) => runCheckTitle(args.join(" ")),
   "tag-releases": (repo) => runTagReleases(repo),
 };
 
