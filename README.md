@@ -77,7 +77,7 @@ Stash has no theme package type: a theme is a plugin that ships CSS, installed f
 | Folder | `plugins/` | `themes/` | `scrapers/` |
 | Stash source type | plugin | plugin | scraper |
 | Version | `version:` in the yml, with a matching `## x.y.z` in CHANGELOG.md | as plugin | first `## x.y.z` in CHANGELOG.md, because Stash rejects unknown scraper yml keys |
-| Extra checks | `name`, `description`, `version` required; `ui` files exist; `.js` files pass `node --check` | as plugin, plus `ui.css` lists at least one file | `name` required; only keys Stash accepts |
+| Extra checks | `name`, `description`, `version` required; `ui` files exist; `.js` files pass `node --check` | as plugin, plus `ui.css` lists at least one file | `name` required; only keys Stash accepts, plus a `settings` block (names of letters, digits and `_`; `type` STRING, NUMBER or BOOLEAN) with a warning that the scraper loads only on Stash Itself 0.22.0+ |
 | Index metadata | `description`, `url`, `commit` | as plugin | `commit` |
 
 Shared behaviour lives in `lib/commands.mjs`; per-kind differences are in `lib/kinds.mjs`.
