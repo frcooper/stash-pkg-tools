@@ -62,7 +62,7 @@ Set the repo to squash merge with the PR title and body as the commit (`squash_m
 
 | Command | What it does |
 |---|---|
-| `stash-pkg validate` | Checks every package is well-formed. |
+| `stash-pkg validate` | Checks every package is well-formed. Warns when a package has no `README.md`, or its README has no `## Use case` or `## Requirements and configuration` section (the intro says what it is). |
 | `stash-pkg build [outdir]` | Validates, then writes `index.yml` and one zip per package (default `_site`). With no packages yet, the index is an empty list. |
 | `stash-pkg plan [base] [title]` | Prints the version each package changed since `<base>` releases as. With a PR title, counts it as the commit the PR will add. |
 | `stash-pkg check-title <title>` | Fails unless the title is a Conventional Commit, e.g. `fix(Insights): keep the calendar in local time`. |
